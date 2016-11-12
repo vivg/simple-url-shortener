@@ -38,8 +38,9 @@ class ApiController extends Controller
 
     /**
      * @param ShortenUrlRequest $request
-     * @return ShortUrl
+     * @return ShortUrl|\Illuminate\Http\JsonResponse
      */
+
     public function shorten(ShortenUrlRequest $request)
     {
         //generate hash
@@ -72,14 +73,21 @@ class ApiController extends Controller
                     $deviceUrls[] = $deviceUrl;
                 }
             }
+
             if(empty($deviceUrl)) {
                 throw new Exception;
             }
+
             $shortUrl->urls()->saveMany($deviceUrls);
             DB::commit();
+
         } catch (Exception $e) {
             DB::rollback();
-            abort('500', 'Error in generating short url. Please try again later');
+
+            return response()->json([
+                'code' => 500,
+                'message' => 'Error in generating short url. Please try again later'
+            ], 500);
         }
 
         return $shortUrl;

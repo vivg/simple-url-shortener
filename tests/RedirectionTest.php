@@ -14,14 +14,14 @@ class RedirectionTest extends TestCase
 
         $shortUrl->urls()->save(factory(App\Models\DeviceUrl::class)->make());
 
-        $this->get('http://localhost/' . $shortUrl->short_code);
+        $this->get($this->baseUrl . '/' .$shortUrl->short_code);
 
         $this->assertResponseStatus(301);
     }
 
     public function testInvalidUrl()
     {
-        $this->get('http://localhost/invalidUrl');
+        $this->get($this->baseUrl . '/invalidUrl');
 
         $this->assertResponseStatus(404);
     }
