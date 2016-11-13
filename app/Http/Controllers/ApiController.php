@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use DB;
 use Exception;
-use Illuminate\Http\Request;
 use App\Http\Requests\ShortenUrlRequest;
 use App\Models\ShortUrl;
 use App\Models\DeviceUrl;
@@ -26,23 +25,33 @@ class ApiController extends Controller
     }
 
     /**
-     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
+     * @return \Illuminate\Http\JsonResponse
      */
     public function listUrls()
     {
         $urls = $this->shortUrlModel->with('urls')->paginate(10);
 
-        return $urls;
+        return response()->json([
+            'code' => 200,
+            'data' => $urls
+        ]);
     }
 
 
     /**
      * @param ShortenUrlRequest $request
-     * @return ShortUrl|\Illuminate\Http\JsonResponse
+     * @return \Illuminate\Http\JsonResponse
      */
-
     public function shorten(ShortenUrlRequest $request)
     {
+        if (!$request->get('url') && !$request->get('urls')) {
+            return response()->json([
+                'code' => 422,
+                'message' => 'Validation failed',
+                'data' => ['errors' => 'url/urls field missing or empty']
+            ], 422);
+        }
+
         //generate hash
         $hash = $this->uniqueHash();
         $shortUrl = new ShortUrl();
@@ -67,10 +76,12 @@ class ApiController extends Controller
                 $urls = $request->get('urls');
 
                 foreach ($urls as $deviceType => $url) {
-                    $deviceUrl = new DeviceUrl();
-                    $deviceUrl->long_url = $url;
-                    $deviceUrl->device_type = $deviceType;
-                    $deviceUrls[] = $deviceUrl;
+                    if(in_array($deviceType, ['desktop', 'mobile', 'tablet'])) {
+                        $deviceUrl = new DeviceUrl();
+                        $deviceUrl->long_url = $url;
+                        $deviceUrl->device_type = $deviceType;
+                        $deviceUrls[] = $deviceUrl;
+                    }
                 }
             }
 
@@ -86,11 +97,14 @@ class ApiController extends Controller
 
             return response()->json([
                 'code' => 500,
-                'message' => 'Error in generating short url. Please try again later'
+                'message' => 'Error in generating short url'
             ], 500);
         }
 
-        return $shortUrl;
+        return response()->json([
+            'code' => 200,
+            'data' => $shortUrl
+        ]);
     }
 
     /**

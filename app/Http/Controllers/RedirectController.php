@@ -13,6 +13,11 @@ class RedirectController extends Controller
     public $shortUrlModel;
     public $agent;
 
+    /**
+     * RedirectController constructor.
+     * @param ShortUrl $shortUrlModel
+     * @param Agent $agent
+     */
     public function __construct(
         ShortUrl $shortUrlModel,
         Agent $agent
@@ -21,11 +26,15 @@ class RedirectController extends Controller
         $this->agent = $agent;
     }
 
+    /**
+     * @param $shortCode
+     * @return mixed
+     */
     public function redirect($shortCode)
     {
         $shortUrl = $this->shortUrlModel->where('short_code', $shortCode)->with('urls')->first();
 
-        //check whether the shortcode exists , if not throw 404
+        //check whether the short code exists , if not throw 404
         if(!$shortUrl) {
             abort(404);
         }
@@ -56,6 +65,9 @@ class RedirectController extends Controller
 
     }
 
+    /**
+     * @return string
+     */
     protected function deviceType()
     {
         if($this->agent->isDesktop()) {

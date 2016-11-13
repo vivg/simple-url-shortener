@@ -15,9 +15,33 @@ class ApiTest extends TestCase
         ]);
 
         $this->assertResponseOk();
-        $this->seeJsonStructure(['short_code', 'short_url', 'created_at']);
+        $this->seeJsonStructure([
+            'data' => [
+                'short_code',
+                'short_url',
+                'created_at'
+            ]
+        ]);
+    }
 
+    public function testCreateShortUrlSingleWithInvalidUrl()
+    {
+        $this->post('/api/shorten', [
+            'url' => 'http:google.com'
+        ]);
 
+        $this->assertResponseStatus(422);
+        $this->seeJson([
+            'code' => 422,
+            'message' => 'Validation failed',
+            'data' => [
+                'errors' => [
+                    'url' => [
+                        'The url format is invalid.'
+                    ]
+                ]
+            ]
+        ]);
     }
 
     public function testCreateShortUrlMulti()
@@ -32,7 +56,57 @@ class ApiTest extends TestCase
         ]);
 
         $this->assertResponseOk();
-        $this->seeJsonStructure(['short_code', 'short_url', 'created_at']);
+        $this->seeJsonStructure([
+            'data' => [
+                'short_code',
+                'short_url',
+                'created_at'
+            ]
+        ]);
+    }
+
+    public function testCreateShortUrlMultiWithInvalidUrl()
+    {
+        $this->post('/api/shorten', [
+            'urls' => [
+                'desktop' => 'https:/www.reddit.com/',
+                'mobile' => 'https:/m.reddit.com/',
+                'tablet' => 'https:/m.reddit.com/'
+            ]
+        ]);
+
+        $this->assertResponseStatus(422);
+        $this->seeJson([
+            'code' => 422,
+            'message' => 'Validation failed',
+            'data' => [
+                'errors' => [
+                    'urls.desktop' => [
+                        'The urls.desktop format is invalid.'
+                    ],
+                    'urls.mobile' => [
+                        'The urls.mobile format is invalid.'
+                    ],
+                    'urls.tablet' => [
+                        'The urls.tablet format is invalid.'
+                    ],
+                ]
+            ]
+        ]);
+    }
+
+    public function testCreateShortUrlWithoutData()
+    {
+        $this->post('/api/shorten');
+
+        $this->assertResponseStatus(422);
+        $this->seeJson([
+            'code' => 422,
+            'message' => 'Validation failed',
+            'data' => [
+                'errors' => 'url/urls field missing or empty'
+            ]
+        ]);
     }
 
     public function testListUrls()
@@ -47,8 +121,17 @@ class ApiTest extends TestCase
 
         $this->assertResponseOk();
         $this->seeJsonStructure([
-            'total', 'per_page', 'current_page', 'last_page',
-            'next_page_url', 'prev_page_url', 'from', 'to', 'data'
+            'data' => [
+                'total',
+                'per_page',
+                'current_page',
+                'last_page',
+                'next_page_url',
+                'prev_page_url',
+                'from',
+                'to',
+                'data'
+            ]
         ]);
 
         $this->seeJson([
@@ -73,10 +156,10 @@ class ApiTest extends TestCase
         $this->get('http://localhost/api/urls?page=2');
 
         $this->assertResponseOk();
-        $this->seeJsonStructure([
+        $this->seeJsonStructure( ['data' => [
             'total', 'per_page', 'current_page', 'last_page',
             'next_page_url', 'prev_page_url', 'from', 'to', 'data'
-        ]);
+        ]]);
 
         $this->seeJson([
             'total' => 13,

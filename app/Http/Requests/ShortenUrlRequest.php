@@ -32,4 +32,13 @@ class ShortenUrlRequest extends FormRequest
             'urls.tablet' => 'url',
         ];
     }
+
+    public function response(array $errors)
+    {
+        return response()->json([
+            'code' => 422,
+            'message' => 'Validation failed',
+            'data' => ['errors' => $errors]
+        ], 422);
+    }
 }
