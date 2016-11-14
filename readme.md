@@ -12,7 +12,7 @@ Simple Url Shortener is a minimalistic shortening API written in Laravel.
 ```
 $ git clone https://github.com/vivg/simple-url-shortener
 $ cd simple-url-shortener/laradock
-$ docker-compose up -d nginx mysql phpmyadmin
+$ docker-compose up -d nginx
 ```
 
 - Install composer packages and run migrations
@@ -20,6 +20,7 @@ $ docker-compose up -d nginx mysql phpmyadmin
 $ docker-compose exec workspace bash
 $ php composer.phar update
 $ php artisan migrate
+$ exit
 ```
 
 ### Available APIs
@@ -64,11 +65,12 @@ $ curl -X POST -H \
 
 ####/{short-code}
 ```
-$ curl -X GET http://localhost:8000/wOF
+$ curl -X GET http://localhost:8000/{short-code}
 ```
 
 ## Running Tests
 ```
 $ docker-compose exec workspace bash
 $ vendor/bin/phpunit
+$ exit
 ```
