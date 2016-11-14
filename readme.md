@@ -36,14 +36,14 @@ $ php artisan migrate
 ```
 $ curl -X GET \
     -H "Content-Type: application/json" \
-    http://localhost/api/urls
+    http://localhost:8000/api/urls
 ```
 
 - With Page Number
 ```
 $ curl -X GET \
     -H "Content-Type: application/json" \
-    http://localhost/api/urls?page=1
+    http://localhost:8000/api/urls?page=1
 ```
 
 ####/api/shorten
@@ -52,19 +52,19 @@ $ curl -X GET \
 $ curl -X POST \
     -H "Content-Type: application/json" \
     -d '{"url":"http://google.com"}' \
-    http://localhost/api/shorten
+    http://localhost:8000/api/shorten
 ```
 - Urls with devices
 ```
-curl -X POST -H \
+$ curl -X POST -H \
     "Content-Type: application/json" \
     -d '{"urls":{"desktop":"https://www.reddit.com","mobile":"https://m.reddit.com", "tablet":"https://m.reddit.com"}}' \
-    http://localhost/api/shorten
+    http://localhost:8000/api/shorten
 ```
 
 ####/{short-code}
 ```
-$ curl -X GET http://localhost/wOF
+$ curl -X GET http://localhost:8000/wOF
 ```
 
 ## Running Tests
